@@ -40,7 +40,8 @@ func stringRunes(runes []rune) string {
 	}
 
 	b := uint64(len(runes))
-	n := 128 / bits.Len64(b-1)
+	l2 := bits.Len64(b - 1)
+	n := (128 + l2 - 1) / l2
 
 	r := make([]rune, n)
 	x := toUint128(p)
