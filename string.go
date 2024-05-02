@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/bits"
+	"unicode/utf8"
 )
 
 func _getLE64(p []byte) uint64 {
@@ -54,6 +55,9 @@ func String1(ab string) string {
 	if len(ab) < 2 {
 		panic(msgTwoRunes)
 	}
+	if !utf8.ValidString(ab) {
+		panic("randstr: alphabet must be a valid UTF-8 string")
+	}
 	runes := []rune(ab)
 	if len(runes) < 2 {
 		panic(msgTwoRunes)
@@ -74,6 +78,9 @@ func String2(ab string) string {
 	const msgTwoRunes = "randstr: alphabet must have at least two different runes"
 	if len(ab) < 2 {
 		panic(msgTwoRunes)
+	}
+	if !utf8.ValidString(ab) {
+		panic("randstr: alphabet must be a valid UTF-8 string")
 	}
 	runes := []rune(ab)
 	if len(runes) < 2 {
