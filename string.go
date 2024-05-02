@@ -14,23 +14,25 @@ func _getLE64(p []byte) uint64 {
 		uint64(p[6])<<48 | uint64(p[7])<<56
 }
 
-type uint128 [2]uint64
+type uint192 [3]uint64
 
-func toUint128(p []byte) uint128 {
-	var u uint128
+func toUint192(p []byte) uint192 {
+	var u uint192
 	u[0] = _getLE64(p)
 	u[1] = _getLE64(p[8:])
+	u[2] = _getLE64(p[16:])
 	return u
 }
 
-func (u *uint128) quoRem(b uint64) (r uint64) {
-	u[1], r = bits.Div64(0, u[1], b)
+func (u *uint192) quoRem(b uint64) (r uint64) {
+	u[2], r = bits.Div64(0, u[2], b)
+	u[1], r = bits.Div64(r, u[1], b)
 	u[0], r = bits.Div64(r, u[0], b)
 	return r
 }
 
 func stringRunes(runes []rune) string {
-	p := make([]byte, 16)
+	p := make([]byte, 24)
 	k, err := rand.Read(p)
 	if err != nil {
 		panic(fmt.Errorf("rand.Read: error %v", err))
@@ -44,11 +46,12 @@ func stringRunes(runes []rune) string {
 	n := (128 + l2 - 1) / l2
 
 	r := make([]rune, n)
-	x := toUint128(p)
+	x := toUint192(p)
 	clear(p)
 	for i := range r {
 		r[i] = runes[x.quoRem(b)]
 	}
+	clear(x[:])
 	s := string(r)
 	clear(r)
 	return s
