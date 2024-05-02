@@ -45,10 +45,13 @@ func stringRunes(runes []rune) string {
 
 	r := make([]rune, n)
 	x := toUint128(p)
+	clear(p)
 	for i := range r {
 		r[i] = runes[x.quoRem(b)]
 	}
-	return string(r)
+	s := string(r)
+	clear(r)
+	return s
 }
 
 func String1(ab string) string {
